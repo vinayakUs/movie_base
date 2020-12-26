@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:geolocator/geolocator.dart';
 import 'package:movie_base/ui/views/search_view.dart';
 
 
@@ -23,17 +22,20 @@ class _DiscoverViewState extends State<DiscoverView> {
             child: Text("search"),
           ),
         ),
-        Center(
-          child: MaterialButton(
-            child: Text("geolocation"),
-            onPressed: () async {
-              Position position = await Geolocator.getCurrentPosition(
-                  desiredAccuracy: LocationAccuracy.high);
-              print(position);
-            },
-          ),
-        ),
+
       ],
     );
   }
 }
+
+
+        // Center(
+        //   child: MaterialButton(
+        //     child: Text("geolocation"),
+        //     onPressed: () async {
+        //       Position position = await Geolocator.getCurrentPosition(
+        //           desiredAccuracy: LocationAccuracy.high);
+        //       print(position);
+        //     },
+        //   ),
+        // ),

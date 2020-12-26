@@ -59,7 +59,8 @@ class _MovieDetailsViewState extends State<MovieDetailsView> {
                 )
               ],
             ),
-          )
+          ),
+          // Text(widget.movieObj.releaseDate.year),
         ],
       ),
     );

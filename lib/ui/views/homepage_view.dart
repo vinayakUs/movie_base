@@ -4,7 +4,7 @@ import 'package:movie_base/core/model/homepage_model.dart';
 import 'package:movie_base/ui/widgets/horizontal_list_widget.dart';
 import 'package:stacked/stacked.dart';
 
- class HomePageView extends StatefulWidget {
+class HomePageView extends StatefulWidget {
   @override
   _HomePageViewState createState() => _HomePageViewState();
 }
@@ -20,34 +20,56 @@ class _HomePageViewState extends State<HomePageView> {
     return ViewModelBuilder<HomePageModel>.reactive(
         builder: (context, model, child) => SafeArea(
               child: Scaffold(
-                  body: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  SizedBox(
-                    height: 10,
-                  ),
-                  Text(
-                    "Popular",
-                  ),
-                  HorizontalListWidget(
-                    onItemTap: (movie){
-                      model.navigateToMovieDetail(movie);
-                    },
-                    future: model.getMovieList(),
-                    onMoreTap: () {
-                      model.navigateToMoreMovie(
-                          title: "Popular",
-                          url:
-                              "https://api.themoviedb.org/3/movie/popular?api_key=$api_key&language=en-US");
-                    },
-                  ),
-                  SizedBox(
-                    height: 10,
-                  ),
-                  Text(
-                    "trending",
-                  ),
-                ],
+                  body: Padding(
+                padding:
+                    const EdgeInsets.symmetric(vertical: 10, horizontal: 10),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Text(
+                          "Popular",
+                        ),
+                        IconButton(
+                            onPressed: () {
+                              model.navigateToMoreMovie(
+                                  title: "Popular",
+                                  url: MovieUrl.popularMovieUrl);
+                            },
+                            icon: Icon(Icons.arrow_right))
+                      ],
+                    ),
+                    HorizontalListWidget(
+                      onItemTap: (movie) {
+                        model.navigateToMovieDetail(movie);
+                      },
+                      future: model.getMovieList(MovieUrl.popularMovieUrl),
+                    ),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Text(
+                          "Upcomming",
+                        ),
+                        IconButton(
+                            onPressed: () {
+                              model.navigateToMoreMovie(
+                                  title: "upcomming",
+                                  url: MovieUrl.upcomingMovieUrl);
+                            },
+                            icon: Icon(Icons.arrow_right))
+                      ],
+                    ),
+                    HorizontalListWidget(
+                      onItemTap: (movie) {
+                        model.navigateToMovieDetail(movie);
+                      },
+                      future: model.getMovieList(MovieUrl.upcomingMovieUrl),
+                    ),
+                  ],
+                ),
               )),
             ),
         viewModelBuilder: () => HomePageModel());

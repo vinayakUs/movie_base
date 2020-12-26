@@ -1,106 +1,82 @@
 import 'package:flutter/material.dart';
 import 'package:movie_base/core/model/movie_model.dart';
 
-class HorizontalListWidget extends StatefulWidget {
+class HorizontalListWidget extends StatelessWidget {
   final Future future;
+  final String url;
   final Function(Movie x) onItemTap;
-  final Function onMoreTap;
   final Widget child;
-  const HorizontalListWidget(
-      {Key key, this.future, this.onItemTap, this.onMoreTap, this.child})
-      : super(key: key);
 
-  @override
-  _HorizontalListWidgetState createState() => _HorizontalListWidgetState();
-}
-
-class _HorizontalListWidgetState extends State<HorizontalListWidget> {
+  const HorizontalListWidget({Key key, this.future, this.url, this.onItemTap, this.child}) : super(key: key);
   @override
   Widget build(BuildContext context) {
     return Container(
       height: 200,
       child: FutureBuilder<List<Movie>>(
-        future: widget.future,
+        future: future,
         builder: (context, snap) {
+          print("snap has error ${snap.hasError}");
+          print("snap has data ${snap.data}");
+
           if (snap.connectionState == ConnectionState.waiting) {
             return Center(
               child: CircularProgressIndicator(),
             );
           }
+          if(snap.hasError || snap.data==null){return Container(child: Center(child: Icon(Icons.error),),);}
           return ListView.builder(
             scrollDirection: Axis.horizontal,
             shrinkWrap: true,
-            itemCount: 20,
+            itemCount: snap.data.length,
             itemBuilder: (context, index) {
-              return index == 19
-                  ? Center(
-                      child: GestureDetector(
-                          onTap: () {
-                            widget.onMoreTap();
-                          },
-                          child: SizedBox(
-                            width: 120,
-                            child: Column(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              children: [
-                                Container(
-                                  decoration: BoxDecoration(
-                                      borderRadius: BorderRadius.circular(20),
-                                      color: Colors.grey[300]),
-                                  height: 50,
-                                  width: 50,
-                                  child: Icon(
-                                    Icons.add,
-                                  ),
-                                )
-                              ],
-                            ),
-                          )))
-                  : GestureDetector(
-                      onTap: () {
-                        widget.onItemTap(snap.data[index]);
-                      },
-                      child: Container(
-                        padding: EdgeInsets.all(10),
-                        margin: EdgeInsets.zero,
-                        width: 120,
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.center,
-                          children: [
-                            Expanded(
-                              child: Material(
-                                type: MaterialType.card,
-                                child: Image.network(
-                                  "https://image.tmdb.org/t/p/w185/${snap.data[index].posterPath}",
-                                  fit: BoxFit.fitWidth,
-                                  loadingBuilder: (BuildContext context,
-                                      Widget child,
-                                      ImageChunkEvent loadingProgress) {
-                                    if (loadingProgress == null) return child;
-                                    return Center(
-                                      child: CircularProgressIndicator(
-                                        value: loadingProgress
-                                                    .expectedTotalBytes !=
-                                                null
-                                            ? loadingProgress
-                                                    .cumulativeBytesLoaded /
-                                                loadingProgress
-                                                    .expectedTotalBytes
-                                            : null,
-                                      ),
-                                    );
-                                  },
+              return  GestureDetector(
+                onTap: () {
+                  onItemTap(snap.data[index]);
+                },
+                child: Container(
+                  padding: EdgeInsets.all(10),
+                  margin: EdgeInsets.zero,
+                  width: 120,
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    children: [
+                      Expanded(
+                        child: Material(
+                          type: MaterialType.card,
+                          child: Image.network(
+                            "https://image.tmdb.org/t/p/w185/${snap.data[index].posterPath}",
+                            errorBuilder: (context,child,e){
+                              return Container(child: Center(child: Icon(Icons.error),),);
+                            },
+                            fit: BoxFit.fitWidth,
+                            loadingBuilder: (BuildContext context,
+                                Widget child,
+                                ImageChunkEvent loadingProgress) {
+                              if (loadingProgress == null) return child;
+                              return Center(
+                                child: CircularProgressIndicator(
+                                  value: loadingProgress
+                                      .expectedTotalBytes !=
+                                      null
+                                      ? loadingProgress
+                                      .cumulativeBytesLoaded /
+                                      loadingProgress
+                                          .expectedTotalBytes
+                                      : null,
                                 ),
-                              ),
-                            ),
-                            Text(
-                              snap.data[index].title,
-                              softWrap: false,
-                            ),
-                          ],
+                              );
+                            },
+                          ),
                         ),
                       ),
-                    );
+                      Text(
+                        snap.data[index].title,
+                        softWrap: false,
+                      ),
+                    ],
+                  ),
+                ),
+              );
             },
           );
         },
@@ -108,3 +84,4 @@ class _HorizontalListWidgetState extends State<HorizontalListWidget> {
     );
   }
 }
+
