@@ -1,4 +1,5 @@
 import 'package:get_it/get_it.dart';
+import 'package:movie_base/core/model/moreDetail_model.dart';
 import 'package:movie_base/core/services/sqlite.dart';
 
 import 'core/model/homepage_model.dart';
@@ -12,4 +13,5 @@ void setupLocator() {
   locator.registerLazySingleton(() => ApiService());
   locator.registerLazySingleton(() => DbConnection());
   locator.registerFactory(() => HomePageModel());
+  locator.registerFactory(() => MoreDetailModel());
 }

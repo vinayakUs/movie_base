@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:movie_base/ui/widgets/scroll_list_model.dart';
+import 'package:movie_base/core/constants/enums.dart';
 import 'package:movie_base/ui/widgets/scroll_list_widget.dart';
 
 class MoreMoviesView extends StatefulWidget {
@@ -12,37 +12,38 @@ class MoreMoviesView extends StatefulWidget {
 }
 
 class _MoreMoviesViewState extends State<MoreMoviesView> {
-  ListViewType type=ListViewType.grid;
-  setType(var data){
+  ListViewType type = ListViewType.grid;
+  setType(var data) {
     setState(() {
-      type=data;
+      type = data;
     });
   }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
         title: Text(widget.title),
-        actions: [GestureDetector(
-            onTap: (){
-              setType(ListViewType.grid);
-            },
-            child: Icon(Icons.grid_view)),
-          GestureDetector(
-            onTap: (){
-              setType(ListViewType.list);
-            },
-            child: Icon(Icons.list))
+        actions: [
+          type == ListViewType.grid
+              ? GestureDetector(
+                  onTap: () {
+                    setType(ListViewType.list);
+                  },
+                  child: Icon(Icons.list))
+              : GestureDetector(
+                  onTap: () {
+                    setType(ListViewType.grid);
+                  },
+                  child: Icon(Icons.grid_view)),
         ],
-
       ),
       body: Column(
         children: [
           Expanded(
             child: ScrollListView(
               viewType: type,
-              url:
-                  widget.url,
+              url: widget.url,
             ),
           ),
         ],

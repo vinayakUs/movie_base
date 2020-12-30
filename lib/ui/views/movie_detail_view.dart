@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:movie_base/core/model/moreDetail_model.dart';
 import 'package:movie_base/core/model/movie_model.dart';
+import 'package:stacked/stacked.dart';
 
 class MovieDetailsView extends StatefulWidget {
   final Movie movieObj;
@@ -13,56 +15,36 @@ class MovieDetailsView extends StatefulWidget {
 class _MovieDetailsViewState extends State<MovieDetailsView> {
   @override
   Widget build(BuildContext context) {
-        // it will provide us total height and width
+    // it will provide us total height and width
     // Size size = MediaQuery.of(context).size;
-    return Scaffold(
-      appBar: AppBar(),
-      body: Column(
-        children: [
-          Padding(
-            padding: const EdgeInsets.all(8.0),
-            child: Row(
-              crossAxisAlignment: CrossAxisAlignment.start,
+    return ViewModelBuilder<MoreDetailModel>.nonReactive(
+      onModelReady: (model) => model.initialize(widget.movieObj),
+      viewModelBuilder: () => MoreDetailModel(),
+      builder: (context, model, child) {
+        return SafeArea(
+          child: Scaffold(
+            body: Column(
               children: [
-                Container(
-                  height: 260,
-                  child: Image.network(
-                    "https://image.tmdb.org/t/p/w185/${widget.movieObj.posterPath}",
-                    fit: BoxFit.fitWidth,
-                    loadingBuilder: (BuildContext context, Widget child,
-                        ImageChunkEvent loadingProgress) {
-                      if (loadingProgress == null) return child;
-                      return Center(
-                        child: CircularProgressIndicator(
-                          value: loadingProgress.expectedTotalBytes != null
-                              ? loadingProgress.cumulativeBytesLoaded /
-                                  loadingProgress.expectedTotalBytes
-                              : null,
-                        ),
-                      );
-                    },
-                  ),
-                ),
-                SizedBox(
-                  width: 30,
-                ),
-                Expanded(
-                  child: Column(
-                    children: [
-                      Text(widget.movieObj.title),
-                      Text(
-                        widget.movieObj.overview,
-                        softWrap: true,
+                Flexible(
+                    fit: FlexFit.loose,
+                    flex: 3,
+                    child: Container(
+                      child: Image.network(
+                        "https://image.tmdb.org/t/p/w500/${widget.movieObj.backdropPath}",
+                        filterQuality: FilterQuality.high,
                       ),
-                    ],
-                  ),
-                )
+                      color: Colors.red,
+                    )),
+                Flexible(
+                    flex: 5,
+                    child: Container(
+                      color: Colors.green,
+                    ))
               ],
             ),
           ),
-          // Text(widget.movieObj.releaseDate.year),
-        ],
-      ),
+        );
+      },
     );
   }
 }

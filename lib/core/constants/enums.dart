@@ -1,0 +1,1 @@
+enum ListViewType { list, grid }
