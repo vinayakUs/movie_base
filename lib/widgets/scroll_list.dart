@@ -1,10 +1,10 @@
+
 import 'package:flutter/material.dart';
 import 'package:flutter_rating_bar/flutter_rating_bar.dart';
 import 'package:movie_base/core/constants/enums.dart';
 import 'package:movie_base/core/model/movie_model.dart';
+import 'package:movie_base/widgets/scroll_list_model.dart';
 import 'package:stacked/stacked.dart';
-
-import 'scroll_list_model.dart';
 
 class ScrollListView extends StatefulWidget {
   final ListViewType viewType;
@@ -192,7 +192,6 @@ class CustomListItmState extends State<CustomListItm> {
 
   @override
   Widget build(BuildContext context) {
-    print(widget.moiveObj.posterPath);
     return Padding(
       padding: const EdgeInsets.all(8.0),
       child: Row(

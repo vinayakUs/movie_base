@@ -7,7 +7,9 @@ class HorizontalListWidget extends StatelessWidget {
   final Function(Movie x) onItemTap;
   final Widget child;
 
-  const HorizontalListWidget({Key key, this.future, this.url, this.onItemTap, this.child}) : super(key: key);
+  const HorizontalListWidget(
+      {Key key, this.future, this.url, this.onItemTap, this.child})
+      : super(key: key);
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -23,13 +25,19 @@ class HorizontalListWidget extends StatelessWidget {
               child: CircularProgressIndicator(),
             );
           }
-          if(snap.hasError || snap.data==null){return Container(child: Center(child: Icon(Icons.error),),);}
+          if (snap.hasError || snap.data == null) {
+            return Container(
+              child: Center(
+                child: Icon(Icons.error),
+              ),
+            );
+          }
           return ListView.builder(
             scrollDirection: Axis.horizontal,
             shrinkWrap: true,
             itemCount: snap.data.length,
             itemBuilder: (context, index) {
-              return  GestureDetector(
+              return GestureDetector(
                 onTap: () {
                   onItemTap(snap.data[index]);
                 },
@@ -45,23 +53,23 @@ class HorizontalListWidget extends StatelessWidget {
                           type: MaterialType.card,
                           child: Image.network(
                             "https://image.tmdb.org/t/p/w185/${snap.data[index].posterPath}",
-                            errorBuilder: (context,child,e){
-                              return Container(child: Center(child: Icon(Icons.error),),);
+                            errorBuilder: (context, child, e) {
+                              return Container(
+                                child: Center(
+                                  child: Icon(Icons.error),
+                                ),
+                              );
                             },
                             fit: BoxFit.fitWidth,
-                            loadingBuilder: (BuildContext context,
-                                Widget child,
+                            loadingBuilder: (BuildContext context, Widget child,
                                 ImageChunkEvent loadingProgress) {
                               if (loadingProgress == null) return child;
                               return Center(
                                 child: CircularProgressIndicator(
-                                  value: loadingProgress
-                                      .expectedTotalBytes !=
-                                      null
-                                      ? loadingProgress
-                                      .cumulativeBytesLoaded /
-                                      loadingProgress
-                                          .expectedTotalBytes
+                                  value: loadingProgress.expectedTotalBytes !=
+                                          null
+                                      ? loadingProgress.cumulativeBytesLoaded /
+                                          loadingProgress.expectedTotalBytes
                                       : null,
                                 ),
                               );
@@ -84,4 +92,3 @@ class HorizontalListWidget extends StatelessWidget {
     );
   }
 }
-

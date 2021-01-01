@@ -2,15 +2,13 @@ import 'package:device_preview/device_preview.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:movie_base/core/constants/app_constants.dart';
-import 'package:movie_base/ui/router.dart' as Router;
+import 'package:movie_base/core/locator.dart';
+import 'package:movie_base/core/services/navigation_service.dart';
+import 'package:movie_base/ui/views/account_view.dart';
+import 'package:movie_base/ui/views/discover_view.dart';
+import 'package:movie_base/ui/views/homepage_view.dart';
 import 'package:movie_base/ui/views/more_movies_view.dart';
-
-import 'core/services/navigation_service.dart';
-import 'locator.dart';
-import 'ui/views/account_view.dart';
-import 'ui/views/discover_view.dart';
-import 'ui/views/homepage_view.dart';
-
+import 'package:movie_base/core/router.dart' as router;
 void main() {
   setupLocator();
   // runApp(MyApp());
@@ -31,7 +29,7 @@ class MyApp extends StatelessWidget {
         title: "Popular",
       ),
       navigatorKey: locator<NavigationService>().navigationKey,
-      onGenerateRoute: Router.Router.generateRoute,
+      onGenerateRoute: router.Router.generateRoute,
     );
   }
 }

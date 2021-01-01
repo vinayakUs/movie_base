@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:movie_base/core/constants/enums.dart';
-import 'package:movie_base/ui/widgets/scroll_list_widget.dart';
+import 'package:movie_base/widgets/scroll_list.dart';
 
 class MoreMoviesView extends StatefulWidget {
   final String title;

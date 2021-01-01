@@ -1,10 +1,10 @@
 import 'package:get_it/get_it.dart';
-import 'package:movie_base/core/model/moreDetail_model.dart';
+import 'file:///C:/Users/vinayak/Desktop/movie_base/lib/ui/model/movie_detail_model.dart';
 import 'package:movie_base/core/services/sqlite.dart';
 
-import 'core/model/homepage_model.dart';
-import 'core/services/api_service.dart';
-import 'core/services/navigation_service.dart';
+import '../ui/model/homepage_model.dart';
+import 'services/api_service.dart';
+import 'services/navigation_service.dart';
 
 GetIt locator = GetIt.I;
 

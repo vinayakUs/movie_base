@@ -1,10 +1,10 @@
 import 'dart:convert';
 import 'package:movie_base/core/constants/app_constants.dart';
+import 'package:movie_base/core/locator.dart';
 import 'package:movie_base/core/model/base_model.dart';
 import 'package:movie_base/core/model/movie_model.dart';
 import 'package:movie_base/core/services/api_service.dart';
 import 'package:movie_base/core/services/navigation_service.dart';
-import 'package:movie_base/locator.dart';
 
 class HomePageModel extends BaseModel {
   ApiService _apiService = locator<ApiService>();

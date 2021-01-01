@@ -2,11 +2,10 @@ import 'dart:convert';
 
 import 'package:flutter/material.dart';
 import 'package:movie_base/core/constants/app_constants.dart';
+import 'package:movie_base/core/locator.dart';
 import 'package:movie_base/core/model/movie_model.dart';
 import 'package:movie_base/core/services/api_service.dart';
 import 'package:movie_base/core/services/navigation_service.dart';
-
-import '../../locator.dart';
 
 class ScrollListModel extends ChangeNotifier {
   //Initlize all state var used in model

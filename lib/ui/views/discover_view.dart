@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:movie_base/ui/views/search_view.dart';
 
-
 class DiscoverView extends StatefulWidget {
   @override
   _DiscoverViewState createState() => _DiscoverViewState();
@@ -22,20 +21,7 @@ class _DiscoverViewState extends State<DiscoverView> {
             child: Text("search"),
           ),
         ),
-
       ],
     );
   }
 }
-
-
-        // Center(
-        //   child: MaterialButton(
-        //     child: Text("geolocation"),
-        //     onPressed: () async {
-        //       Position position = await Geolocator.getCurrentPosition(
-        //           desiredAccuracy: LocationAccuracy.high);
-        //       print(position);
-        //     },
-        //   ),
-        // ),
