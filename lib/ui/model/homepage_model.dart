@@ -1,4 +1,3 @@
-import 'dart:convert';
 import 'package:movie_base/core/constants/app_constants.dart';
 import 'package:movie_base/core/locator.dart';
 import 'package:movie_base/core/model/base_model.dart';
@@ -10,18 +9,10 @@ class HomePageModel extends BaseModel {
   ApiService _apiService = locator<ApiService>();
   NavigationService _navigationService = locator<NavigationService>();
 
-  Future<List<Movie>> getMovieList(String url) async {
-    RegExp reg1 = new RegExp(r'(page=)');
-    if (!reg1.hasMatch(url)) {
-      url = url + '&page=1';
-    }
-    print(url);
-    var movies;
+  Future<List<Movie>> getMovieList (String url) async {
+     var movies;
     try {
-      var response = await _apiService.getApiData(url);
-      movies = (json.decode(response.body)["results"] as List)
-          .map((i) => Movie.fromJson(i))
-          .toList();
+      movies = _apiService.fetchMovieFromUrl(url);
     } catch (e) {
       throw e;
     }

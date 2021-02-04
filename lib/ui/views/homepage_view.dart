@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:movie_base/core/constants/app_constants.dart';
+import 'package:movie_base/core/model/movie_model.dart';
 import 'package:movie_base/ui/model/homepage_model.dart';
+import 'package:movie_base/widgets/cards/movie_card.dart';
 import 'package:movie_base/widgets/horizontal_list.dart';
 import 'package:stacked/stacked.dart';
 
@@ -41,11 +43,26 @@ class _HomePageViewState extends State<HomePageView> {
                             icon: Icon(Icons.arrow_right))
                       ],
                     ),
-                    HorizontalListWidget(
-                      onItemTap: (movie) {
-                        model.navigateToMovieDetail(movie);
-                      },
-                      future: model.getMovieList(MovieUrl.popularMovieUrl),
+                    Container(
+                      height: 200,
+                      child: HorizontalListBuilder<Movie>.fromFuture(
+                        child: (x) {
+                           return MovieCard(
+                          obj: x,
+                          onItemTap: (x){
+                           model.navigateToMovieDetail(x);
+                          },
+                          textLabel: true,
+                          );
+                        },
+                        errWidget: Center(
+                          child: Icon(Icons.error),
+                        ),
+                        loadingWidget:
+                            Center(child: CircularProgressIndicator()),
+                    
+                        future: model.getMovieList(MovieUrl.popularMovieUrl),
+                      ),
                     ),
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -62,11 +79,26 @@ class _HomePageViewState extends State<HomePageView> {
                             icon: Icon(Icons.arrow_right))
                       ],
                     ),
-                    HorizontalListWidget(
-                      onItemTap: (movie) {
-                        model.navigateToMovieDetail(movie);
-                      },
-                      future: model.getMovieList(MovieUrl.upcomingMovieUrl),
+                    Container(
+                      height: 200,
+                      child: HorizontalListBuilder<Movie>.fromFuture(
+                        loadingWidget: Container(
+                          child: Center(
+                              child: Container(
+                                  child: CircularProgressIndicator())),
+                        ),
+                        child: (x) {
+                          // return Text(x.title);
+                          return MovieCard(
+                            obj: x,
+                            onItemTap: (x){
+                              model.navigateToMovieDetail(x);
+                            },
+                            textLabel: true,
+                            );
+                        },
+                        future: model.getMovieList(MovieUrl.upcomingMovieUrl),
+                      ),
                     ),
                   ],
                 ),
@@ -74,4 +106,5 @@ class _HomePageViewState extends State<HomePageView> {
             ),
         viewModelBuilder: () => HomePageModel());
   }
+ 
 }

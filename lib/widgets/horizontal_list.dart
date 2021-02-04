@@ -1,94 +1,70 @@
 import 'package:flutter/material.dart';
-import 'package:movie_base/core/model/movie_model.dart';
+ 
+// ignore: must_be_immutable
+class HorizontalListBuilder<T> extends StatefulWidget {
+  Future future;
+  bool fromFuture;
+  List<T> data;
+  Function(T x) child;
+  Widget errWidget;
+  Widget loadingWidget;
 
-class HorizontalListWidget extends StatelessWidget {
-  final Future future;
-  final String url;
-  final Function(Movie x) onItemTap;
-  final Widget child;
-
-  const HorizontalListWidget(
-      {Key key, this.future, this.url, this.onItemTap, this.child})
+  HorizontalListBuilder.fromFuture(
+      {Key key,
+      this.future,
+      this.fromFuture = true,
+      this.child,
+      this.errWidget,
+      this.loadingWidget})
       : super(key: key);
+  HorizontalListBuilder.fromData(
+      {Key key,
+      this.data,
+      this.fromFuture = false,
+      this.child,
+      this.errWidget,
+      this.loadingWidget})
+      : super(key: key);
+
+  @override
+  _HorizontalListBuilderState<T> createState() =>
+      _HorizontalListBuilderState<T>();
+}
+
+class _HorizontalListBuilderState<T> extends State<HorizontalListBuilder<T>> {
   @override
   Widget build(BuildContext context) {
-    return Container(
-      height: 200,
-      child: FutureBuilder<List<Movie>>(
-        future: future,
-        builder: (context, snap) {
-          print("snap has error ${snap.hasError}");
-          print("snap has data ${snap.data}");
+    return widget.fromFuture == true
+        ? FutureBuilder<List<T>>(
+            future: widget.future,
+            builder: (context, snap) {
+              print(snap.connectionState);
+              print(snap.data);
 
-          if (snap.connectionState == ConnectionState.waiting) {
-            return Center(
-              child: CircularProgressIndicator(),
-            );
-          }
-          if (snap.hasError || snap.data == null) {
-            return Container(
-              child: Center(
-                child: Icon(Icons.error),
-              ),
-            );
-          }
-          return ListView.builder(
-            scrollDirection: Axis.horizontal,
-            shrinkWrap: true,
-            itemCount: snap.data.length,
-            itemBuilder: (context, index) {
-              return GestureDetector(
-                onTap: () {
-                  onItemTap(snap.data[index]);
+              if (snap.connectionState == ConnectionState.waiting ||
+                  snap.connectionState == ConnectionState.active) {
+                return widget.loadingWidget;
+              }
+              if (snap.hasError) {
+                return widget.errWidget;
+              }
+              return ListView.builder(
+                shrinkWrap: true,
+                scrollDirection: Axis.horizontal,
+                itemCount: snap.data.length,
+                itemBuilder: (context, index) {
+                  return widget.child(snap.data[index]);
                 },
-                child: Container(
-                  padding: EdgeInsets.all(10),
-                  margin: EdgeInsets.zero,
-                  width: 120,
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.center,
-                    children: [
-                      Expanded(
-                        child: Material(
-                          type: MaterialType.card,
-                          child: Image.network(
-                            "https://image.tmdb.org/t/p/w185/${snap.data[index].posterPath}",
-                            errorBuilder: (context, child, e) {
-                              return Container(
-                                child: Center(
-                                  child: Icon(Icons.error),
-                                ),
-                              );
-                            },
-                            fit: BoxFit.fitWidth,
-                            loadingBuilder: (BuildContext context, Widget child,
-                                ImageChunkEvent loadingProgress) {
-                              if (loadingProgress == null) return child;
-                              return Center(
-                                child: CircularProgressIndicator(
-                                  value: loadingProgress.expectedTotalBytes !=
-                                          null
-                                      ? loadingProgress.cumulativeBytesLoaded /
-                                          loadingProgress.expectedTotalBytes
-                                      : null,
-                                ),
-                              );
-                            },
-                          ),
-                        ),
-                      ),
-                      Text(
-                        snap.data[index].title,
-                        softWrap: false,
-                      ),
-                    ],
-                  ),
-                ),
               );
             },
-          );
-        },
-      ),
-    );
+          )
+        :  ListView.builder(
+              shrinkWrap: true,scrollDirection: Axis.horizontal,
+                itemCount: widget.data.length,
+                itemBuilder: (context, index) {
+                  return widget.child(widget.data[index]);
+                },
+              );
+            
   }
 }
