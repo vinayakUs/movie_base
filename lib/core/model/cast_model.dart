@@ -1,40 +1,39 @@
- 
 import 'dart:convert';
 
-Cast castFromJson(String str) => Cast.fromJson(json.decode(str));
+CastModel castFromJson(String str) => CastModel.fromJson(json.decode(str));
 
-String castToJson(Cast data) => json.encode(data.toJson());
+String castToJson(CastModel data) => json.encode(data.toJson());
 
-class Cast {
-    Cast({
-        this.adult,
-        this.gender,
-        this.id,
-        this.knownForDepartment,
-        this.name,
-        this.originalName,
-        this.popularity,
-        this.profilePath,
-        this.castId,
-        this.character,
-        this.creditId,
-        this.order,
-    });
+class CastModel {
+  CastModel({
+    this.adult,
+    this.gender,
+    this.id,
+    this.knownForDepartment,
+    this.name,
+    this.originalName,
+    this.popularity,
+    this.profilePath,
+    this.castId,
+    this.character,
+    this.creditId,
+    this.order,
+  });
 
-    bool adult;
-    int gender;
-    int id;
-    String knownForDepartment;
-    String name;
-    String originalName;
-    double popularity;
-    String profilePath;
-    int castId;
-    String character;
-    String creditId;
-    int order;
+  bool adult;
+  int gender;
+  int id;
+  String knownForDepartment;
+  String name;
+  String originalName;
+  double popularity;
+  String profilePath;
+  int castId;
+  String character;
+  String creditId;
+  int order;
 
-    factory Cast.fromJson(Map<String, dynamic> json) => Cast(
+  factory CastModel.fromJson(Map<String, dynamic> json) => CastModel(
         adult: json["adult"],
         gender: json["gender"],
         id: json["id"],
@@ -47,9 +46,9 @@ class Cast {
         character: json["character"],
         creditId: json["credit_id"],
         order: json["order"],
-    );
+      );
 
-    Map<String, dynamic> toJson() => {
+  Map<String, dynamic> toJson() => {
         "adult": adult,
         "gender": gender,
         "id": id,
@@ -62,5 +61,5 @@ class Cast {
         "character": character,
         "credit_id": creditId,
         "order": order,
-    };
+      };
 }

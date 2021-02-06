@@ -21,10 +21,10 @@ class ApiService {
         .toList();
   }
 
-  Future<List<Cast>> fetchCastFromUrl(String url) async {
+  Future<List<CastModel>> fetchCastModelFromUrl(String url) async {
     var response = await getApiData(url);
-    return (json.decode(response.body)["cast"] as List)
-        .map((i) => Cast.fromJson(i))
+    return (json.decode(response.body)["CastModel"] as List)
+        .map((i) => CastModel.fromJson(i))
         .toList();
   }
 

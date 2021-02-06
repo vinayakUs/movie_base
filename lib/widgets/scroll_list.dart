@@ -80,68 +80,70 @@ class CustomListItmState extends State<CustomListItm> {
   Widget build(BuildContext context) {
     return Padding(
       padding: const EdgeInsets.all(8.0),
-      child: Row(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Flexible(
-            flex: 2,
-            child: Container(
-              child: ClipRRect(
-                borderRadius: BorderRadius.circular(10),
-                child: Image.network(
-                  'https://image.tmdb.org/t/p/w185/${widget.moiveObj.posterPath}',
-                  fit: BoxFit.cover,
-                  errorBuilder: (context, e, stack) {
-                    return Container(
-                        height: 150, child: Center(child: Icon(Icons.error)));
-                  },
-                  loadingBuilder: (BuildContext context, Widget child,
-                      ImageChunkEvent loadingProgress) {
-                    if (loadingProgress == null) return child;
+      child: GestureDetector(
+        child: Row(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Flexible(
+              flex: 2,
+              child: Container(
+                child: ClipRRect(
+                  borderRadius: BorderRadius.circular(10),
+                  child: Image.network(
+                    'https://image.tmdb.org/t/p/w185/${widget.moiveObj.posterPath}',
+                    fit: BoxFit.cover,
+                    errorBuilder: (context, e, stack) {
+                      return Container(
+                          height: 150, child: Center(child: Icon(Icons.error)));
+                    },
+                    loadingBuilder: (BuildContext context, Widget child,
+                        ImageChunkEvent loadingProgress) {
+                      if (loadingProgress == null) return child;
 
-                    return Center(
-                      child: Container(
-                        height: 150,
-                        child: Center(
-                          child: CircularProgressIndicator(
-                            value: loadingProgress.expectedTotalBytes != null
-                                ? loadingProgress.cumulativeBytesLoaded /
-                                    loadingProgress.expectedTotalBytes
-                                : null,
+                      return Center(
+                        child: Container(
+                          height: 150,
+                          child: Center(
+                            child: CircularProgressIndicator(
+                              value: loadingProgress.expectedTotalBytes != null
+                                  ? loadingProgress.cumulativeBytesLoaded /
+                                      loadingProgress.expectedTotalBytes
+                                  : null,
+                            ),
                           ),
                         ),
-                      ),
-                    );
-                  },
-                  //
-                  // color: Colors.blueAccent,
+                      );
+                    },
+                    //
+                    // color: Colors.blueAccent,
+                  ),
                 ),
               ),
             ),
-          ),
-          Flexible(
-              flex: 5,
-              child: Container(
-                child: FractionallySizedBox(
-                  child: Column(
-                    mainAxisSize: MainAxisSize.max,
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      SizedBox(
-                        height: 10,
-                      ),
-                      Text(widget.moiveObj.title),
-                      RatingBarIndicator(
-                          rating: widget.moiveObj.voteAverage / 2,
-                          itemSize: 20,
-                          itemBuilder: (context, _) {
-                            return Icon(Icons.star);
-                          })
-                    ],
+            Flexible(
+                flex: 5,
+                child: Container(
+                  child: FractionallySizedBox(
+                    child: Column(
+                      mainAxisSize: MainAxisSize.max,
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        SizedBox(
+                          height: 10,
+                        ),
+                        Text(widget.moiveObj.title),
+                        RatingBarIndicator(
+                            rating: widget.moiveObj.voteAverage / 2,
+                            itemSize: 20,
+                            itemBuilder: (context, _) {
+                              return Icon(Icons.star);
+                            })
+                      ],
+                    ),
                   ),
-                ),
-              ))
-        ],
+                ))
+          ],
+        ),
       ),
     );
   }

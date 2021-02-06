@@ -17,8 +17,6 @@ class MoreMoviesView extends StatefulWidget {
 
 class _MoreMoviesViewState extends State<MoreMoviesView> {
   ListViewType type = ListViewType.grid;
-  // final PagingController<int, Movie> _pagingController =
-  //     PagingController(firstPageKey: 1);
   setType(var data) {
     setState(() {
       type = data;
@@ -49,15 +47,26 @@ class _MoreMoviesViewState extends State<MoreMoviesView> {
             ],
           ),
           body: RefreshIndicator(
-              onRefresh: () => Future.sync(() => model.pagingController.refresh()),
-              child: PagedListView<int, Movie>(
+              onRefresh: () =>
+                  Future.sync(() => model.pagingController.refresh()),
+              child: PagedListView<int, Movie>.separated(
                 pagingController: model.pagingController,
                 builderDelegate: PagedChildBuilderDelegate<Movie>(
                     itemBuilder: (context, item, index) {
-                  return CustomListItm(
-                    moiveObj: item,
+                  return GestureDetector(
+                    onTap: () {
+                      model.navigateToDetails(model.items[index]);
+                    },
+                    child: CustomListItm(
+                      moiveObj: item,
+                      index: index,
+                      // itemCreated: (){},
+                    ),
                   );
                 }),
+                separatorBuilder: (context, index) => const Divider(
+                  thickness: 2,
+                ),
               )),
         );
       },

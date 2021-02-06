@@ -47,12 +47,12 @@ class _HomePageViewState extends State<HomePageView> {
                       height: 200,
                       child: HorizontalListBuilder<Movie>.fromFuture(
                         child: (x) {
-                           return MovieCard(
-                          obj: x,
-                          onItemTap: (x){
-                           model.navigateToMovieDetail(x);
-                          },
-                          textLabel: true,
+                          return MovieCard(
+                            obj: x,
+                            onItemTap: (x) {
+                              model.navigateToMovieDetail(x);
+                            },
+                            textLabel: true,
                           );
                         },
                         errWidget: Center(
@@ -60,7 +60,6 @@ class _HomePageViewState extends State<HomePageView> {
                         ),
                         loadingWidget:
                             Center(child: CircularProgressIndicator()),
-                    
                         future: model.getMovieList(MovieUrl.popularMovieUrl),
                       ),
                     ),
@@ -87,15 +86,17 @@ class _HomePageViewState extends State<HomePageView> {
                               child: Container(
                                   child: CircularProgressIndicator())),
                         ),
+                        errWidget: Center(
+                          child: Icon(Icons.error),
+                        ),
                         child: (x) {
-                          // return Text(x.title);
                           return MovieCard(
                             obj: x,
-                            onItemTap: (x){
+                            onItemTap: (x) {
                               model.navigateToMovieDetail(x);
                             },
                             textLabel: true,
-                            );
+                          );
                         },
                         future: model.getMovieList(MovieUrl.upcomingMovieUrl),
                       ),
@@ -106,5 +107,4 @@ class _HomePageViewState extends State<HomePageView> {
             ),
         viewModelBuilder: () => HomePageModel());
   }
- 
 }

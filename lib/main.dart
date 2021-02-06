@@ -22,7 +22,7 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       locale: DevicePreview.locale(context),
       builder: DevicePreview.appBuilder,
-      home: HomePageView(),
+      home: MyHomePage(),
       // home: MoreMoviesView(
       //   url: MovieUrl.upcomingMovieUrl,
       //   title: "Popular",

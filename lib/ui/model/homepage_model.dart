@@ -14,7 +14,7 @@ class HomePageModel extends BaseModel {
     try {
       movies = _apiService.fetchMovieFromUrl(url);
     } catch (e) {
-      throw e;
+      print(e);
     }
     return movies;
   }

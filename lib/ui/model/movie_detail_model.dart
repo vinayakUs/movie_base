@@ -234,18 +234,21 @@ enum Loading { isLoading, error, done }
 class MoreDetailModel extends BaseModel {
   ApiService _apiService = locator<ApiService>();
   NavigationService _navigationService = locator<NavigationService>();
+  bool movieInstanceError=false;
 
   Welcome _movieInstance;
   List<Movie> _similarMovies = [];
   List<Movie> _recommended = [];
-  List<Cast> _cast = [];
+  List<CastModel> _cast = [];
 
   List<Movie> get similarMovies => _similarMovies;
-  List<Cast> get cast => _cast;
+  List<CastModel> get cast => _cast;
   List<Movie> get recommended => _recommended;
   Welcome get movieInstance => _movieInstance;
 
   void setMovieInstance(var data) {
+        print('set movieInstance call $data');
+
     _movieInstance = data;
     notifyListeners();
   }
@@ -268,13 +271,22 @@ class MoreDetailModel extends BaseModel {
     notifyListeners();
   }
 
-  Future<Welcome> initialize(int movieId) async {
+  void initialize(int movieId) async {
+    try{
     Response response = await _apiService.getApiData(
         "https://api.themoviedb.org/3/movie/$movieId?api_key=$api_key&language=en-US");
-    return Welcome.fromJson(json.decode(response.body));
+        
+    setMovieInstance(Welcome.fromJson(json.decode(response.body)));
+   
+    }catch(e){
+      movieInstanceError=true;
+      notifyListeners();
+    }
+    // return Welcome.fromJson(json.decode(response.body));
   }
 
   void onModelReady(id) async {
+    initialize(id);
     getSimilarMovies(id);
     getCastModel(id);
     getRecommendedMovies(id);
@@ -315,7 +327,7 @@ class MoreDetailModel extends BaseModel {
         "https://api.themoviedb.org/3/movie/$id/credits?api_key=$api_key&language=en-US";
     print(url);
     try {
-      var cast = await _apiService.fetchCastFromUrl(url);
+      var cast = await _apiService.fetchCastModelFromUrl(url);
       print(cast.length);
 
       if (cast.length == 0) {
