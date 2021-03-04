@@ -8,6 +8,7 @@ import 'package:movie_base/ui/views/discover_view.dart';
 import 'package:movie_base/ui/views/homepage_view.dart';
 import 'package:movie_base/core/router.dart' as router;
 import 'package:movie_base/ui/views/tvshow_view.dart';
+ 
 void main() {
   setupLocator();
   // runApp(MyApp());
@@ -23,6 +24,7 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       locale: DevicePreview.locale(context),
       builder: DevicePreview.appBuilder,
+      // home: MyHomePage(),
       home: TvShowView(),
       // home: MoreMoviesView(
       //   url: MovieUrl.upcomingMovieUrl,

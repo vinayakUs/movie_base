@@ -1,14 +1,13 @@
-import 'package:http/http.dart';
 import 'package:movie_base/core/constants/app_constants.dart';
+import 'package:movie_base/core/error_handler.dart';
 import 'package:movie_base/core/locator.dart';
 import 'package:movie_base/core/model/base_model.dart';
 import 'package:movie_base/core/model/cast_model.dart';
 import 'package:movie_base/core/model/movie_model.dart';
-
 import 'dart:convert';
-
 import 'package:movie_base/core/services/api_service.dart';
 import 'package:movie_base/core/services/navigation_service.dart';
+import 'package:movie_base/ui/model/tvshow_model.dart';
 
 Welcome welcomeFromJson(String str) => Welcome.fromJson(json.decode(str));
 
@@ -234,9 +233,38 @@ enum Loading { isLoading, error, done }
 class MoreDetailModel extends BaseModel {
   ApiService _apiService = locator<ApiService>();
   NavigationService _navigationService = locator<NavigationService>();
-  bool movieInstanceError=false;
 
-  Welcome _movieInstance;
+  var _movieId;
+  get tvId => _movieId;
+  set setMovieId(id) {
+    _movieId = id;
+    notifyListeners();
+  }
+
+  Welcome _instance;
+  Welcome get instance => _instance;
+  set setInstance(instance) {
+    _instance = instance;
+    notifyListeners();
+  }
+
+  InstanceStatus _instanceStatus = new InstanceStatus();
+  InstanceStatus get instanceStatus => _instanceStatus;
+
+  Future fetchMovieInstance(id) async {
+    try {
+      _instanceStatus.status = Status.loading;
+      notifyListeners();
+      Welcome instance = await _apiService.fetchMovieInstance(id);
+      setInstance = instance;
+    } on Failure catch (e) {
+      _instanceStatus.failure = e;
+      print(e.message);
+    }
+    _instanceStatus.status = Status.done;
+    notifyListeners();
+  }
+
   List<Movie> _similarMovies = [];
   List<Movie> _recommended = [];
   List<CastModel> _cast = [];
@@ -244,52 +272,17 @@ class MoreDetailModel extends BaseModel {
   List<Movie> get similarMovies => _similarMovies;
   List<CastModel> get cast => _cast;
   List<Movie> get recommended => _recommended;
-  Welcome get movieInstance => _movieInstance;
 
-  void setMovieInstance(var data) {
-        print('set movieInstance call $data');
-
-    _movieInstance = data;
-    notifyListeners();
-  }
-
-  void setCast(data) {
-    print('set cast call $data');
-    _cast = data;
-    notifyListeners();
-  }
-
-  void setRecommended(data) {
-    print('set recommended movies call $data');
-    _recommended = data;
-    notifyListeners();
-  }
-
-  void setSimilarMovies(data) {
-    print('set similar movies call $data');
-    _similarMovies = data;
-    notifyListeners();
-  }
-
-  void initialize(int movieId) async {
-    try{
-    Response response = await _apiService.getApiData(
-        "https://api.themoviedb.org/3/movie/$movieId?api_key=$api_key&language=en-US");
-        
-    setMovieInstance(Welcome.fromJson(json.decode(response.body)));
-   
-    }catch(e){
-      movieInstanceError=true;
-      notifyListeners();
-    }
-    // return Welcome.fromJson(json.decode(response.body));
-  }
+  
 
   void onModelReady(id) async {
-    initialize(id);
-    getSimilarMovies(id);
-    getCastModel(id);
-    getRecommendedMovies(id);
+    setMovieId = id;
+    await fetchMovieInstance(id);
+    if (_instance != null) {
+      getSimilarMovies(id);
+      getCastModel(id);
+      getRecommendedMovies(id);
+    }
   }
 
   void getSimilarMovies(int id) async {
@@ -300,10 +293,12 @@ class MoreDetailModel extends BaseModel {
       if (movies.length == 0) {
         throw Exception();
       }
-      setSimilarMovies(movies);
+      _similarMovies=movies;
+      notifyListeners();
     } catch (e) {
       print("exception getSimilarMovies $e");
-      setSimilarMovies(null);
+      _similarMovies=null;
+      notifyListeners();
     }
   }
 
@@ -315,10 +310,12 @@ class MoreDetailModel extends BaseModel {
       if (movies.length == 0) {
         throw Exception();
       }
-      setRecommended(movies);
+      _recommended=movies;
+      notifyListeners();
     } catch (e) {
       print("exception recommended $e");
-      setRecommended(null);
+      _recommended=null;
+      notifyListeners();
     }
   }
 
@@ -327,16 +324,20 @@ class MoreDetailModel extends BaseModel {
         "https://api.themoviedb.org/3/movie/$id/credits?api_key=$api_key&language=en-US";
     print(url);
     try {
-      var cast = await _apiService.fetchCastModelFromUrl(url);
+      List<CastModel> cast = await _apiService.fetchMovieCastbyId(_movieId);
+      print("cast data is $cast");
       print(cast.length);
 
       if (cast.length == 0) {
         throw Exception();
       }
-      setCast(cast);
+      _cast=cast;
+      notifyListeners();
     } catch (e) {
-      print("exception Cast $e");
-      setCast(null);
+       _cast=null;
+      print("exception cast $e");
+      notifyListeners();
+      
     }
   }
 

@@ -2,8 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:movie_base/core/constants/app_constants.dart';
 import 'package:movie_base/core/model/movie_model.dart';
 import 'package:movie_base/ui/model/homepage_model.dart';
-import 'package:movie_base/widgets/cards/movie_card.dart';
 import 'package:movie_base/widgets/horizontal_list.dart';
+import 'package:movie_base/widgets/movie_card.dart';
 import 'package:stacked/stacked.dart';
 
 class HomePageView extends StatefulWidget {

@@ -1,24 +1,9 @@
 import 'dart:convert';
 
+import 'package:movie_base/core/error_handler.dart';
 import 'package:movie_base/core/locator.dart';
 import 'package:movie_base/core/model/base_model.dart';
 import 'package:movie_base/core/services/api_service.dart';
-
-enum FailureType { HttpException, FormatException, SocketException, Error404 }
-
-class Failure {
-  var message;
-  FailureType type;
-  Failure({this.message, this.type});
-}
-
-enum Status { active, loading, done }
-
-class InstanceStatus {
-  Failure failure;
-  Status status;
-  InstanceStatus({this.failure, this.status = Status.active});
-}
 
 class TvShowModel extends BaseModel {
   ApiService _apiService = locator<ApiService>();
@@ -60,6 +45,405 @@ class TvShowModel extends BaseModel {
     print(tvId);
 
     await fetchTvInstance(id);
+    if (_instance != null) {
+      await fetchEpisodeData(1);
+      print("value is ${_episodeInstance[1]}");
+    }
+  }
+
+  // Data for episode details
+  int _currentSelectedSeason=1;
+  get currentSelectedSeason => _currentSelectedSeason;
+  set currentSelectedSeason(sno) {
+    _currentSelectedSeason = sno;
+    fetchEpisodeData(sno);
+    notifyListeners();
+  }
+
+  var _episodeInstance = new Map<int, EpisodeModel>();
+  EpisodeModel episodeModel(sno) => _episodeInstance[sno];
+
+  fetchEpisodeData(sno) async {
+    if (_episodeInstance[sno] == null) {
+      EpisodeModel model = await _apiService.fetchEpisodesFromId(_tvId, sno);
+      _episodeInstance[sno] = model;
+    }
+  }
+}
+
+class EpisodeModel {
+  String sId;
+  String airDate;
+  List<Episodes> episodes;
+  String name;
+  String overview;
+  int id;
+  String posterPath;
+  int seasonNumber;
+
+  EpisodeModel(
+      {this.sId,
+      this.airDate,
+      this.episodes,
+      this.name,
+      this.overview,
+      this.id,
+      this.posterPath,
+      this.seasonNumber});
+
+  EpisodeModel.fromJson(Map<String, dynamic> json) {
+    sId = json['_id'];
+    airDate = json['air_date'];
+    if (json['episodes'] != null) {
+      episodes = new List<Episodes>();
+      json['episodes'].forEach((v) {
+        episodes.add(new Episodes.fromJson(v));
+      });
+    }
+    name = json['name'];
+    overview = json['overview'];
+    id = json['id'];
+    posterPath = json['poster_path'];
+    seasonNumber = json['season_number'];
+  }
+
+  Map<String, dynamic> toJson() {
+    final Map<String, dynamic> data = new Map<String, dynamic>();
+    data['_id'] = this.sId;
+    data['air_date'] = this.airDate;
+    if (this.episodes != null) {
+      data['episodes'] = this.episodes.map((v) => v.toJson()).toList();
+    }
+    data['name'] = this.name;
+    data['overview'] = this.overview;
+    data['id'] = this.id;
+    data['poster_path'] = this.posterPath;
+    data['season_number'] = this.seasonNumber;
+    return data;
+  }
+}
+
+class Episodes {
+  String airDate;
+  int episodeNumber;
+  List<Crew> crew;
+  List<GuestStars> guestStars;
+  int id;
+  String name;
+  String overview;
+  String productionCode;
+  int seasonNumber;
+  String stillPath;
+  double voteAverage;
+  int voteCount;
+
+  Episodes(
+      {this.airDate,
+      this.episodeNumber,
+      this.crew,
+      this.guestStars,
+      this.id,
+      this.name,
+      this.overview,
+      this.productionCode,
+      this.seasonNumber,
+      this.stillPath,
+      this.voteAverage,
+      this.voteCount});
+
+  Episodes.fromJson(Map<String, dynamic> json) {
+    airDate = json['air_date'];
+    episodeNumber = json['episode_number'];
+    if (json['crew'] != null) {
+      crew = new List<Crew>();
+      json['crew'].forEach((v) {
+        crew.add(new Crew.fromJson(v));
+      });
+    }
+    if (json['guest_stars'] != null) {
+      guestStars = new List<GuestStars>();
+      json['guest_stars'].forEach((v) {
+        guestStars.add(new GuestStars.fromJson(v));
+      });
+    }
+    id = json['id'];
+    name = json['name'];
+    overview = json['overview'];
+    productionCode = json['production_code'];
+    seasonNumber = json['season_number'];
+    stillPath = json['still_path'];
+    voteAverage = json['vote_average'];
+    voteCount = json['vote_count'];
+  }
+
+  Map<String, dynamic> toJson() {
+    final Map<String, dynamic> data = new Map<String, dynamic>();
+    data['air_date'] = this.airDate;
+    data['episode_number'] = this.episodeNumber;
+    if (this.crew != null) {
+      data['crew'] = this.crew.map((v) => v.toJson()).toList();
+    }
+    if (this.guestStars != null) {
+      data['guest_stars'] = this.guestStars.map((v) => v.toJson()).toList();
+    }
+    data['id'] = this.id;
+    data['name'] = this.name;
+    data['overview'] = this.overview;
+    data['production_code'] = this.productionCode;
+    data['season_number'] = this.seasonNumber;
+    data['still_path'] = this.stillPath;
+    data['vote_average'] = this.voteAverage;
+    data['vote_count'] = this.voteCount;
+    return data;
+  }
+}
+
+class Crew {
+  String department;
+  String job;
+  String creditId;
+  bool adult;
+  int gender;
+  int id;
+  String knownForDepartment;
+  String name;
+  String originalName;
+  double popularity;
+  String profilePath;
+
+  Crew(
+      {this.department,
+      this.job,
+      this.creditId,
+      this.adult,
+      this.gender,
+      this.id,
+      this.knownForDepartment,
+      this.name,
+      this.originalName,
+      this.popularity,
+      this.profilePath});
+
+  Crew.fromJson(Map<String, dynamic> json) {
+    department = json['department'];
+    job = json['job'];
+    creditId = json['credit_id'];
+    adult = json['adult'];
+    gender = json['gender'];
+    id = json['id'];
+    knownForDepartment = json['known_for_department'];
+    name = json['name'];
+    originalName = json['original_name'];
+    popularity = json['popularity'];
+    profilePath = json['profile_path'];
+  }
+
+  Map<String, dynamic> toJson() {
+    final Map<String, dynamic> data = new Map<String, dynamic>();
+    data['department'] = this.department;
+    data['job'] = this.job;
+    data['credit_id'] = this.creditId;
+    data['adult'] = this.adult;
+    data['gender'] = this.gender;
+    data['id'] = this.id;
+    data['known_for_department'] = this.knownForDepartment;
+    data['name'] = this.name;
+    data['original_name'] = this.originalName;
+    data['popularity'] = this.popularity;
+    data['profile_path'] = this.profilePath;
+    return data;
+  }
+}
+
+class GuestStars {
+  String character;
+  String creditId;
+  int order;
+  bool adult;
+  int gender;
+  int id;
+  String knownForDepartment;
+  String name;
+  String originalName;
+  double popularity;
+  String profilePath;
+
+  GuestStars(
+      {this.character,
+      this.creditId,
+      this.order,
+      this.adult,
+      this.gender,
+      this.id,
+      this.knownForDepartment,
+      this.name,
+      this.originalName,
+      this.popularity,
+      this.profilePath});
+
+  GuestStars.fromJson(Map<String, dynamic> json) {
+    character = json['character'];
+    creditId = json['credit_id'];
+    order = json['order'];
+    adult = json['adult'];
+    gender = json['gender'];
+    id = json['id'];
+    knownForDepartment = json['known_for_department'];
+    name = json['name'];
+    originalName = json['original_name'];
+    popularity = json['popularity'];
+    profilePath = json['profile_path'];
+  }
+
+  Map<String, dynamic> toJson() {
+    final Map<String, dynamic> data = new Map<String, dynamic>();
+    data['character'] = this.character;
+    data['credit_id'] = this.creditId;
+    data['order'] = this.order;
+    data['adult'] = this.adult;
+    data['gender'] = this.gender;
+    data['id'] = this.id;
+    data['known_for_department'] = this.knownForDepartment;
+    data['name'] = this.name;
+    data['original_name'] = this.originalName;
+    data['popularity'] = this.popularity;
+    data['profile_path'] = this.profilePath;
+    return data;
+  }
+}
+
+TvShowModelSr tvShowModelSrFromJson(String str) =>
+    TvShowModelSr.fromJson(json.decode(str));
+
+String tvShowModelSrToJson(TvShowModelSr data) => json.encode(data.toJson());
+
+class TvShowModelSr {
+  TvShowModelSr({
+    this.page,
+    this.results,
+    this.totalPages,
+    this.totalResults,
+  });
+
+  int page;
+  List<Result> results;
+  int totalPages;
+  int totalResults;
+
+  factory TvShowModelSr.fromJson(Map<String, dynamic> json) => TvShowModelSr(
+        page: json["page"],
+        results:
+            List<Result>.from(json["results"].map((x) => Result.fromJson(x))),
+        totalPages: json["total_pages"],
+        totalResults: json["total_results"],
+      );
+
+  Map<String, dynamic> toJson() => {
+        "page": page,
+        "results": List<dynamic>.from(results.map((x) => x.toJson())),
+        "total_pages": totalPages,
+        "total_results": totalResults,
+      };
+}
+
+class Result {
+  Result({
+    this.originalLanguage,
+    this.posterPath,
+    this.firstAirDate,
+    this.voteAverage,
+    this.originalName,
+    this.originCountry,
+    this.voteCount,
+    this.name,
+    this.overview,
+    this.backdropPath,
+    this.id,
+    this.genreIds,
+    this.popularity,
+  });
+
+  OriginalLanguage originalLanguage;
+  String posterPath;
+  DateTime firstAirDate;
+  double voteAverage;
+  String originalName;
+  List<OriginCountry> originCountry;
+  int voteCount;
+  String name;
+  String overview;
+  String backdropPath;
+  int id;
+  List<int> genreIds;
+  double popularity;
+
+  factory Result.fromJson(Map<String, dynamic> json) => Result(
+        originalLanguage: originalLanguageValues.map[json["original_language"]],
+        posterPath: json["poster_path"],
+        firstAirDate: json["first_air_date"] == null
+            ? null
+            : DateTime.parse(json["first_air_date"]),
+        voteAverage: json["vote_average"].toDouble(),
+        originalName: json["original_name"],
+        originCountry: List<OriginCountry>.from(
+            json["origin_country"].map((x) => originCountryValues.map[x])),
+        voteCount: json["vote_count"],
+        name: json["name"],
+        overview: json["overview"],
+        backdropPath: json["backdrop_path"],
+        id: json["id"],
+        genreIds: List<int>.from(json["genre_ids"].map((x) => x)),
+        popularity: json["popularity"].toDouble(),
+      );
+
+  Map<String, dynamic> toJson() => {
+        "original_language": originalLanguageValues.reverse[originalLanguage],
+        "poster_path": posterPath,
+        "first_air_date": firstAirDate == null
+            ? null
+            : "${firstAirDate.year.toString().padLeft(4, '0')}-${firstAirDate.month.toString().padLeft(2, '0')}-${firstAirDate.day.toString().padLeft(2, '0')}",
+        "vote_average": voteAverage,
+        "original_name": originalName,
+        "origin_country": List<dynamic>.from(
+            originCountry.map((x) => originCountryValues.reverse[x])),
+        "vote_count": voteCount,
+        "name": name,
+        "overview": overview,
+        "backdrop_path": backdropPath,
+        "id": id,
+        "genre_ids": List<dynamic>.from(genreIds.map((x) => x)),
+        "popularity": popularity,
+      };
+}
+
+enum OriginCountry { US, JP, KR, GB }
+
+final originCountryValues = EnumValues({
+  "GB": OriginCountry.GB,
+  "JP": OriginCountry.JP,
+  "KR": OriginCountry.KR,
+  "US": OriginCountry.US
+});
+
+enum OriginalLanguage { EN, JA, KO }
+
+final originalLanguageValues = EnumValues({
+  "en": OriginalLanguage.EN,
+  "ja": OriginalLanguage.JA,
+  "ko": OriginalLanguage.KO
+});
+
+class EnumValues<T> {
+  Map<String, T> map;
+  Map<T, String> reverseMap;
+
+  EnumValues(this.map);
+
+  Map<T, String> get reverse {
+    if (reverseMap == null) {
+      reverseMap = map.map((k, v) => new MapEntry(v, k));
+    }
+    return reverseMap;
   }
 }
 
