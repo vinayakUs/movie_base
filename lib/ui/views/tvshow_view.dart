@@ -8,6 +8,8 @@ import 'package:movie_base/ui/model/tvshow_model.dart';
 import 'package:movie_base/widgets/imagewidget.dart';
 import 'package:stacked/stacked.dart';
 
+import '../../core/constants/enums.dart';
+
 class TvShowView extends StatefulWidget {
   @override
   _TvShowViewState createState() => _TvShowViewState();
@@ -48,13 +50,13 @@ class _TvShowViewState extends State<TvShowView> {
                   Text(model.instance.numberOfSeasons.toString()),
                   Container(
                     width: 350,
-                    // height: 500,
                     child: EpisodeWidg(
                       sno: model.currentSelectedSeason,
                       tvid: model.tvId,
                       totalSeasons: model.instance.numberOfSeasons,
                     ),
-                  )
+                  ),
+
                 ],
               );
             }),
@@ -75,20 +77,20 @@ class EpisodeWidg extends StatefulWidget {
 }
 
 class _EpisodeWidgState extends State<EpisodeWidg> {
-  int currSno=1;
-  ApiService _apiService =locator<ApiService>();
+  int currSno = 1;
+  ApiService _apiService = locator<ApiService>();
   var _episodeInstance = new Map<int, EpisodeModel>();
   EpisodeModel episodeModel(sno) => _episodeInstance[sno];
 
-  
-
-  Future<EpisodeModel> getEpisodeData(currsno)async{
+  Future<EpisodeModel> getEpisodeData(currsno) async {
     if (_episodeInstance[currsno] == null) {
-      EpisodeModel model = await _apiService.fetchEpisodesFromId(widget.tvid, currSno);
+      EpisodeModel model =
+          await _apiService.fetchEpisodesFromId(widget.tvid, currSno);
       _episodeInstance[currSno] = model;
     }
     return _episodeInstance[currsno];
   }
+
   @override
   Widget build(BuildContext context) {
     return Column(
@@ -105,8 +107,8 @@ class _EpisodeWidgState extends State<EpisodeWidg> {
                 child: GestureDetector(
                     onTap: () {
                       setState(() {
-                                              currSno=index+1;
-                                            });
+                        currSno = index + 1;
+                      });
                     },
                     child: Container(
                       child: Text("season ${index + 1}"),
@@ -117,8 +119,47 @@ class _EpisodeWidgState extends State<EpisodeWidg> {
         ),
         FutureBuilder<EpisodeModel>(
           future: getEpisodeData(currSno),
-          builder: (context,snap){
-            return Text(snap.data.episodes[0].name.toString());
+          builder: (context, snap) {
+            if (snap.connectionState == ConnectionState.waiting) {
+              return Center(
+                child: CircularProgressIndicator(),
+              );
+            }
+            if (snap.hasError) {
+              return Center(
+                child: Text("Something went wrong"),
+              );
+            }
+            return ListView.builder(
+              itemBuilder: (context, index) => Row(
+                children: [
+                  Flexible(
+                    child: Padding(
+                      padding: const EdgeInsets.fromLTRB(0, 0, 8, 8),
+                      child: ImageWidget(
+                        backdrop: snap.data.episodes[index].stillPath,
+                        quality: "w185",
+                        loadingHeight: 80,
+                        error: Container(
+                          height: 100,
+                          child: Icon(Icons.error),
+                        ),
+
+                      ),
+                    ),
+                    fit: FlexFit.tight,
+                    flex: 4,
+                  ),
+                  Flexible(
+                    child: Text(snap.data.episodes[index].name.toString()),
+                    flex: 5,
+                  )
+                ],
+              ),
+              itemCount: snap.data.episodes.length,
+              scrollDirection: Axis.vertical,
+              shrinkWrap: true,
+            );
           },
         ),
       ],

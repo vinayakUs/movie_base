@@ -4,7 +4,7 @@ class ImageWidget extends StatelessWidget {
   final Widget error;
   final backdrop;
   final quality;
-  final loadingHeight;
+  final double loadingHeight;
 
   const ImageWidget(
       {Key key,
@@ -21,7 +21,7 @@ class ImageWidget extends StatelessWidget {
     var url = "https://image.tmdb.org/t/p/$quality$backdrop";
     return Image.network(
       url,
-      width: double.infinity,
+      // width: double.infinity,
       fit: BoxFit.contain,
       loadingBuilder: (BuildContext context, Widget child,
           ImageChunkEvent loadingProgress) {

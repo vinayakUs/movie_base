@@ -1,5 +1,3 @@
-import 'package:device_preview/device_preview.dart';
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:movie_base/core/locator.dart';
 import 'package:movie_base/core/services/navigation_service.dart';
@@ -12,18 +10,22 @@ import 'package:movie_base/ui/views/tvshow_view.dart';
 void main() {
   setupLocator();
   // runApp(MyApp());
-  runApp(DevicePreview(
-    enabled: !kReleaseMode,
-    builder: (context) => MyApp(), // Wrap your app
-  ));
+  runApp(
+  //     DevicePreview(
+  //   enabled: !kReleaseMode,
+  //   builder: (context) => MyApp(), // Wrap your app
+  // )
+  MyApp()
+
+  );
 }
 
 class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      locale: DevicePreview.locale(context),
-      builder: DevicePreview.appBuilder,
+      // locale: DevicePreview.locale(context),
+      // builder: DevicePreview.appBuilder,
       // home: MyHomePage(),
       home: TvShowView(),
       // home: MoreMoviesView(

@@ -8,6 +8,12 @@ import 'package:movie_base/core/model/movie_model.dart';
 import 'package:movie_base/ui/model/movie_detail_model.dart';
 import 'package:movie_base/ui/model/tvshow_model.dart';
 
+import '../../ui/model/tvshow_model.dart';
+import '../../ui/model/tvshow_model.dart';
+import '../../ui/model/tvshow_model.dart';
+import '../constants/app_constants.dart';
+import '../constants/app_constants.dart';
+
 class ApiService {
   Future getApiData(String url) async {
     http.Response response = await http.get(url);
@@ -88,11 +94,29 @@ class ApiService {
     }
   }
 
-  Future<EpisodeModel> fetchEpisodesFromId(id,sno)async{
-   var url=  "${MovieUrl.baseUrl}/tv/$id/season/$sno?api_key=$api_key&language=en-US";
+  Future<EpisodeModel> fetchEpisodesFromId(id, sno) async {
+    var url =
+        "${MovieUrl.baseUrl}/tv/$id/season/$sno?api_key=$api_key&language=en-US";
 
     http.Response response = await getApiData(url);
     print(response.statusCode);
     return EpisodeModel.fromJson(json.decode(response.body));
+  }
+
+  Future<TvShowModelSr> fetchRecommendedTvShowById(id) async {
+    var url =
+        "${MovieUrl.baseUrl}tv/$id/recommendations?api_key=$api_key&language=en-US&page=1";
+    http.Response res = await getApiData(url);
+    return TvShowModelSr.fromJson(json.decode(res.body));
+  }
+
+  Future<TvShowModelSr> fetchSimilarTvShowById(id) async {
+    var url =
+        "${MovieUrl.baseUrl}tv/$id/similar?api_key=$api_key&language=en-US&page=1";
+    http.Response res = await getApiData(url);
+    return TvShowModelSr.fromJson(json.decode(res.body));
+    // print((json.decode(res.body)["results"] as List)
+    //     .map((i) => TvShowModelSr.fromJson(i))
+    //     .toList());
   }
 }

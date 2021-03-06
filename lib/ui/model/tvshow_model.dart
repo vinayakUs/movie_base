@@ -40,6 +40,19 @@ class TvShowModel extends BaseModel {
     notifyListeners();
   }
 
+  TvShowModelSr _similar;
+  TvShowModelSr _rec;
+
+  getRecommendedTvShow(id) async {
+    _rec = await _apiService.fetchRecommendedTvShowById(id);
+    notifyListeners();
+  }
+
+  getSimilarTvShow(id) async {
+    _similar = await _apiService.fetchSimilarTvShowById(id);
+    notifyListeners();
+  }
+
   onModelReady(id) async {
     setTvId = id;
     print(tvId);
@@ -48,11 +61,17 @@ class TvShowModel extends BaseModel {
     if (_instance != null) {
       await fetchEpisodeData(1);
       print("value is ${_episodeInstance[1]}");
+
+      //get similar
+      await getSimilarTvShow(id);
+      //get recommended
+      await getRecommendedTvShow(id);
+      // await getRecommendedTvShowById(id);
     }
   }
 
   // Data for episode details
-  int _currentSelectedSeason=1;
+  int _currentSelectedSeason = 1;
   get currentSelectedSeason => _currentSelectedSeason;
   set currentSelectedSeason(sno) {
     _currentSelectedSeason = sno;
@@ -312,43 +331,57 @@ class GuestStars {
   }
 }
 
-TvShowModelSr tvShowModelSrFromJson(String str) =>
-    TvShowModelSr.fromJson(json.decode(str));
-
-String tvShowModelSrToJson(TvShowModelSr data) => json.encode(data.toJson());
+//
 
 class TvShowModelSr {
-  TvShowModelSr({
-    this.page,
-    this.results,
-    this.totalPages,
-    this.totalResults,
-  });
-
   int page;
-  List<Result> results;
+  List<Results> results;
   int totalPages;
   int totalResults;
 
-  factory TvShowModelSr.fromJson(Map<String, dynamic> json) => TvShowModelSr(
-        page: json["page"],
-        results:
-            List<Result>.from(json["results"].map((x) => Result.fromJson(x))),
-        totalPages: json["total_pages"],
-        totalResults: json["total_results"],
-      );
+  TvShowModelSr({this.page, this.results, this.totalPages, this.totalResults});
 
-  Map<String, dynamic> toJson() => {
-        "page": page,
-        "results": List<dynamic>.from(results.map((x) => x.toJson())),
-        "total_pages": totalPages,
-        "total_results": totalResults,
-      };
+  TvShowModelSr.fromJson(Map<String, dynamic> json) {
+    page = json['page'];
+    if (json['results'] != null) {
+      results = new List<Results>();
+      json['results'].forEach((v) {
+        results.add(new Results.fromJson(v));
+      });
+    }
+    totalPages = json['total_pages'];
+    totalResults = json['total_results'];
+  }
+
+  Map<String, dynamic> toJson() {
+    final Map<String, dynamic> data = new Map<String, dynamic>();
+    data['page'] = this.page;
+    if (this.results != null) {
+      data['results'] = this.results.map((v) => v.toJson()).toList();
+    }
+    data['total_pages'] = this.totalPages;
+    data['total_results'] = this.totalResults;
+    return data;
+  }
 }
 
-class Result {
-  Result({
-    this.originalLanguage,
+class Results {
+  String originalLanguage;
+  String posterPath;
+  String firstAirDate;
+  double voteAverage;
+  String originalName;
+  List<String> originCountry;
+  int voteCount;
+  String name;
+  String overview;
+  String backdropPath;
+  int id;
+  List<int> genreIds;
+  double popularity;
+
+  Results(
+      {this.originalLanguage,
     this.posterPath,
     this.firstAirDate,
     this.voteAverage,
@@ -360,93 +393,44 @@ class Result {
     this.backdropPath,
     this.id,
     this.genreIds,
-    this.popularity,
-  });
+    this.popularity});
 
-  OriginalLanguage originalLanguage;
-  String posterPath;
-  DateTime firstAirDate;
-  double voteAverage;
-  String originalName;
-  List<OriginCountry> originCountry;
-  int voteCount;
-  String name;
-  String overview;
-  String backdropPath;
-  int id;
-  List<int> genreIds;
-  double popularity;
+  Results.fromJson(Map<String, dynamic> json) {
+    originalLanguage = json['original_language'];
+    posterPath = json['poster_path'];
+    firstAirDate = json['first_air_date'];
+    voteAverage = json['vote_average'];
+    originalName = json['original_name'];
+    originCountry = json['origin_country'].cast<String>();
+    voteCount = json['vote_count'];
+    name = json['name'];
+    overview = json['overview'];
+    backdropPath = json['backdrop_path'];
+    id = json['id'];
+    genreIds = json['genre_ids'].cast<int>();
+    popularity = json['popularity'];
+  }
 
-  factory Result.fromJson(Map<String, dynamic> json) => Result(
-        originalLanguage: originalLanguageValues.map[json["original_language"]],
-        posterPath: json["poster_path"],
-        firstAirDate: json["first_air_date"] == null
-            ? null
-            : DateTime.parse(json["first_air_date"]),
-        voteAverage: json["vote_average"].toDouble(),
-        originalName: json["original_name"],
-        originCountry: List<OriginCountry>.from(
-            json["origin_country"].map((x) => originCountryValues.map[x])),
-        voteCount: json["vote_count"],
-        name: json["name"],
-        overview: json["overview"],
-        backdropPath: json["backdrop_path"],
-        id: json["id"],
-        genreIds: List<int>.from(json["genre_ids"].map((x) => x)),
-        popularity: json["popularity"].toDouble(),
-      );
-
-  Map<String, dynamic> toJson() => {
-        "original_language": originalLanguageValues.reverse[originalLanguage],
-        "poster_path": posterPath,
-        "first_air_date": firstAirDate == null
-            ? null
-            : "${firstAirDate.year.toString().padLeft(4, '0')}-${firstAirDate.month.toString().padLeft(2, '0')}-${firstAirDate.day.toString().padLeft(2, '0')}",
-        "vote_average": voteAverage,
-        "original_name": originalName,
-        "origin_country": List<dynamic>.from(
-            originCountry.map((x) => originCountryValues.reverse[x])),
-        "vote_count": voteCount,
-        "name": name,
-        "overview": overview,
-        "backdrop_path": backdropPath,
-        "id": id,
-        "genre_ids": List<dynamic>.from(genreIds.map((x) => x)),
-        "popularity": popularity,
-      };
-}
-
-enum OriginCountry { US, JP, KR, GB }
-
-final originCountryValues = EnumValues({
-  "GB": OriginCountry.GB,
-  "JP": OriginCountry.JP,
-  "KR": OriginCountry.KR,
-  "US": OriginCountry.US
-});
-
-enum OriginalLanguage { EN, JA, KO }
-
-final originalLanguageValues = EnumValues({
-  "en": OriginalLanguage.EN,
-  "ja": OriginalLanguage.JA,
-  "ko": OriginalLanguage.KO
-});
-
-class EnumValues<T> {
-  Map<String, T> map;
-  Map<T, String> reverseMap;
-
-  EnumValues(this.map);
-
-  Map<T, String> get reverse {
-    if (reverseMap == null) {
-      reverseMap = map.map((k, v) => new MapEntry(v, k));
-    }
-    return reverseMap;
+  Map<String, dynamic> toJson() {
+    final Map<String, dynamic> data = new Map<String, dynamic>();
+    data['original_language'] = this.originalLanguage;
+    data['poster_path'] = this.posterPath;
+    data['first_air_date'] = this.firstAirDate;
+    data['vote_average'] = this.voteAverage;
+    data['original_name'] = this.originalName;
+    data['origin_country'] = this.originCountry;
+    data['vote_count'] = this.voteCount;
+    data['name'] = this.name;
+    data['overview'] = this.overview;
+    data['backdrop_path'] = this.backdropPath;
+    data['id'] = this.id;
+    data['genre_ids'] = this.genreIds;
+    data['popularity'] = this.popularity;
+    return data;
   }
 }
 
+//
 TvShowInstance tvShowInstanceFromJson(String str) =>
     TvShowInstance.fromJson(json.decode(str));
 
